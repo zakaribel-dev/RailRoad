@@ -1,0 +1,356 @@
+openapi: 3.0.0
+info:
+  title: RailRoad API
+  description: API for managing trains, stations, tickets, and users
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                pseudo:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [user, admin, employee]
+      responses:
+        '200':
+          description: Inscription réussie
+        '400':
+          description: Erreur serveur
+
+  /users/login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie
+        '401':
+          description: Email ou mot de passe incorrect
+
+  /users/me:
+    get:
+      summary: Get the profile of the logged-in user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profil de l'utilisateur connecté
+        '403':
+          description: Accès refusé
+        '500':
+          description: Erreur serveur
+
+    put:
+      summary: Update the profile of the logged-in user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                pseudo:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Profil mis à jour
+        '403':
+          description: Vous ne pouvez mettre à jour que votre propre profil
+
+    delete:
+      summary: Delete the profile of the logged-in user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profil supprimé
+        '403':
+          description: Vous ne pouvez supprimer que votre propre profil
+
+  /stations:
+    get:
+      summary: Get all train stations
+      description: List all train stations, accessible to anyone (logged in or not)
+      responses:
+        '200':
+          description: Liste des stations retournée
+        '500':
+          description: Erreur serveur
+
+    post:
+      summary: Create a new station (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                open_hour:
+                  type: string
+                close_hour:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Nouvelle station créée avec succès
+        '403':
+          description: Accès refusé (seulement pour les admins)
+
+  /stations/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID de la station
+    get:
+      summary: Get details of a specific station
+      responses:
+        '200':
+          description: Station trouvée
+        '404':
+          description: Station non trouvée
+
+    put:
+      summary: Update a specific station (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                open_hour:
+                  type: string
+                close_hour:
+                  type: string
+      responses:
+        '200':
+          description: Station mise à jour
+        '403':
+          description: Accès refusé (seulement pour les admins)
+
+    delete:
+      summary: Delete a specific station (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Station supprimée avec succès
+        '400':
+          description: Station liée à des trains ou tickets, impossible à supprimer
+        '403':
+          description: Accès refusé (seulement pour les admins)
+
+  /trains:
+    get:
+      summary: Get all trains
+      description: Accessible sans connexion pour récupérer la liste des trains
+      responses:
+        '200':
+          description: Liste des trains retournée
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    start_station:
+                      type: string
+                    end_station:
+                      type: string
+                    time_of_departure:
+                      type: string
+                      format: date-time
+        '500':
+          description: Erreur serveur
+
+    post:
+      summary: Create a new train (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                start_station:
+                  type: string
+                end_station:
+                  type: string
+                time_of_departure:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Train ajouté
+        '403':
+          description: Accès refusé (seulement pour les admins)
+
+  /trains/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID du train
+    get:
+      summary: Get details of a specific train
+      responses:
+        '200':
+          description: Détails du train retournés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  start_station:
+                    type: string
+                  end_station:
+                    type: string
+                  time_of_departure:
+                    type: string
+                    format: date-time
+        '404':
+          description: Train non trouvé
+
+    put:
+      summary: Update a specific train (admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                start_station:
+                  type: string
+                end_station:
+                  type: string
+                time_of_departure:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Train mis à jour
+        '403':
+          description: Accès refusé (seulement pour les admins)
+
+    delete:
+      summary: Delete a specific train (admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Train supprimé
+        '403':
+          description: Accès refusé (seulement pour les admins)
+
+  /tickets:
+    post:
+      summary: Book a ticket (user only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trainId:
+                  type: string
+      responses:
+        '200':
+          description: Billet réservé avec succès
+        '400':
+          description: Erreur lors de la réservation
+
+  /tickets/validate:
+    post:
+      summary: Validate a ticket (user only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticketId:
+                  type: string
+      responses:
+        '200':
+          description: Ticket validé avec succès
+        '400':
+          description: Erreur lors de la validation
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
