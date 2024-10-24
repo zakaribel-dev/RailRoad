@@ -51,6 +51,7 @@ To stay organized during the project, I used a Trello board to track progress, m
 - <b>Services</b>: Contain the business logic and interact with the DAOs.
 - <b>DAOs</b>: (Data Access Objects): Handle direct interaction with the database.
 
+This structure promotes scalability and maintainability by making the codebase easier to manage, debug, and extend.
 ## Tests
 
 npm test train.test.js <br>
