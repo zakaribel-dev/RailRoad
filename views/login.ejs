@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <main class="login-container">
+        <a href="/" class="btn">Retour à l'accueil</a>
+
+        <section class="login-form">
+            <h2>Connexion</h2>
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email :</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de Passe :</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn">Se connecter</button>
+            </form>
+
+            <% if (error) { %>
+                <p class="error-message"><%= error %></p>
+            <% } %>
+
+            <p>Pas encore inscrit ? <a href="/register">S'inscrire</a></p>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %> 
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= formTitle %></title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <%- include('partials/header') %>
+
+    <main class="login-container">
+        <a href="/stations" class="btn">Retour aux stations</a>
+         <!-- Les ternaires dans les inputs c'est ce qui fait de stationForm.ejs une formulaire hybride. Il sert à la fois de post et put
+        je verifie par exemple si il ya une station de définie (donc val actuelle en cas de put) <%= station ? station.name : '' %>
+         il m'affichera la station actuelle sinon rien (dans le cas où on post une nouvelle station) -->
+        <section>
+            <h1><%= formTitle %></h1>
+            <form action="<%= action %>" method="POST" enctype="multipart/form-data" class="station-form">
+                <div class="form-group">
+                    <label for="name">Nom de la Station :</label>   
+                    <input type="text" id="name" name="name" value="<%= station ? station.name : '' %>" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="open_hour">Heure d'Ouverture :</label>
+                    <input type="time" id="open_hour" name="open_hour" value="<%= station ? station.open_hour : '' %>" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="close_hour">Heure de Fermeture :</label>
+                    <input type="time" id="close_hour" name="close_hour" value="<%= station ? station.close_hour : '' %>" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="image">Image :</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+            
+                <button type="submit" class="btn">Sauvegarder</button>
+            </form>
+            
+            
+        </section>
+    </main>
+
+    <%- include('partials/footer') %> 
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= formTitle %></title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <%- include('partials/header') %>
+
+    <main class="container">
+
+        <section class="form-section">
+            <h1><%= formTitle %></h1>
+
+            <form action="<%= action %>" method="POST" class="train-form">
+                
+                <div class="form-group">
+                    <label for="name">Nom du Train :</label>
+                    <input type="text" id="name" name="name" value="<%= train ? train.name : '' %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_station">Station de Départ :</label>
+                    <select id="start_station" name="start_station" required>
+                        <option value="">Sélectionnez une station</option>
+                        <% stations.forEach(function(station) { %>
+                            <option value="<%= station._id %>"><%= station.name %></option>
+                        <% }); %>
+                    </select>
+                    
+                    <div class="form-group">
+                        <label for="end_station">Station d'Arrivée :</label>
+                        <select id="end_station" name="end_station" required>
+                            <option value="">Sélectionnez une station</option>
+                            <% stations.forEach(function(station) { %>
+                                <option value="<%= station._id %>"><%= station.name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    
+                </div>
+
+                <div class="form-group">
+                    <label for="time_of_departure">Heure de Départ :</label>
+                    <input type="datetime-local" id="time_of_departure" name="time_of_departure" 
+                            required>
+                </div>
+
+                <button type="submit" class="btn">Sauvegarder</button>
+            </form>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %> 
+
+
+</body>
+</html>

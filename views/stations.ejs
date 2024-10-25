@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Stations</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <%- include('partials/header') %>
+
+    <main>
+        <section>
+            <h1>Liste des Stations</h1>
+            <nav>
+                <% if (user && user.role === 'admin') { %> 
+                    <a href="/stations/create" class="btn">Créer une nouvelle Station</a>
+                <% } %> 
+            </nav>
+
+            <% if (message) { %>
+                <p style="color: green;"><%= message %></p>
+            <% } %>
+
+            <% if (stations && stations.length > 0) { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Heure d'Ouverture</th>
+                            <th>Heure de Fermeture</th>
+                            <th>Image</th>
+                            <% if (user && user.role === 'admin') { %> 
+                                <th>Actions</th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% stations.forEach(function(station) { %>
+                        <tr>
+                            <td><%= station.name %></td>
+                            <td><%= station.open_hour %></td>
+                            <td><%= station.close_hour %></td>
+                            <td><img src="/uploads/<%= station.image %>" alt="<%= station.name %>"></td>
+                            <% if (user && user.role === 'admin') { %>
+                                <td>
+                                    <a href="/stations/<%= station._id %>/edit" class="btn-edit">Modifier</a>
+                                    <form action="/stations/<%= station._id %>?_method=DELETE" method="POST" style="display:inline;">
+                                        <button class="btn-delete" type="submit">Supprimer</button>
+                                    </form>
+                                </td>
+                            <% } %>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>Aucune station pour l'instant...</p>
+            <% } %>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %>
+
+</body>
+</html>

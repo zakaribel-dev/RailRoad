@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil RailRoad API</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
+</head>
+<body>
+    <%- include('partials/header') %> 
+
+    <% if (typeof message !== 'undefined' && message) { %>
+        <p style="color: green;"><%= message %></p>
+    <% } %>
+    <main>
+        <section>
+            <h2>À propos de RailRoad</h2>
+            <p>RailRoad API vous permet de gérer les trains, les gares, les réservations de billets, et plus encore.</p>
+        </section>
+
+        <section>
+            <h2>Liste des Trains</h2>
+            <% if (trains && trains.length > 0) { %>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Station de Départ</th>
+                            <th>Station d'Arrivée</th>
+                            <th>Heure de Départ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% trains.forEach(function(train) { %>
+                        <tr>
+                            <td><%= train.name %></td>
+                            <td><%= train.start_station.name %></td>
+                            <td><%= train.end_station.name %></td>
+                            <td><%= new Date(train.time_of_departure).toLocaleString() %></td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>Aucun train disponible pour le moment.</p>
+            <% } %>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %> 
+
+</body>
+</html>

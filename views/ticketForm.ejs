@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réserver un Billet</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    
+    <%- include('partials/header') %>
+
+    <main>
+        <section>
+
+            <h1>Réserver un Billet</h1>
+            <form action="/tickets" method="POST" class="ticket-form">
+                <div class="form-group">
+                    <label for="trainId">Sélectionnez un Train :</label>
+                    <select id="trainId" name="trainId" required>
+                        <% trains.forEach(function(train) { %>
+                            <option value="<%= train._id %>"><%= train.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Réserver</button>
+            </form>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %> 
+
+</body>
+</html>

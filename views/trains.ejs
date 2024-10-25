@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des trains</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <%- include('partials/header') %>
+
+    <main class="container">
+        <% if (message) { %>
+            <div class="message"><%= message %></div>
+        <% } %>
+
+        <section>
+
+            <h1>Liste des Trains</h1>
+
+            <nav>
+                <% if (loggedIn && user && user.role === 'admin') { %> 
+                    <a href="/trains/create" class="btn">Créer un nouveau Train</a>
+                <% } %>
+               
+            </nav>
+            
+ <!-- "trains[0].start_station.name" car j'utilise populate qui me permet d'accéder au nom dla station -->
+       
+                <% if (selectedStartStation) { %> 
+                    <% if (trains[0] && trains[0].start_station) { %>
+                        <p><strong><i>Résultat(s) filtré(s) par <u>station de départ</u> : <%= trains[0].start_station.name %></i></strong></p>
+                    <% } %>
+                <% } %>
+
+                <% if (selectedEndStation) { %>
+                    <% if (trains[0] && trains[0].end_station) { %>
+                        <p><strong><i>Résultat(s) filtré(s) par <u>station d'arrivée</u> : <%= trains[0].end_station.name %></i></strong></p>
+                    <% } %>
+                <% } %>
+
+
+            <form method="GET" action="/trains" class="filter-form">
+                <label for="start_station">Filtrer par station de départ :</label>
+                <select id="start_station" name="start_station">
+                    <option value="">Sélectionner une station de départ</option>
+                    <% stations.forEach(function(station) { %>
+                        <option value=""> >
+                            <%= station.name %>
+                        </option>
+                    <% }); %>
+                </select>
+
+                <label for="end_station">Filtrer par station d'arrivée :</label>
+                <select id="end_station" name="end_station">
+                    <option value="">Sélectionner une station d'arrivée</option>
+                    <% stations.forEach(function(station) { %>
+                        <option value="""> >
+                            <%= station.name %>
+                        </option>
+                    <% }); %>
+                </select>
+
+                <button type="submit" name="sortBy" value="time_of_departure" class="btn">Trier</button>
+            </form>
+        </section>
+
+        <section>
+            <% if (trains && trains.length > 0) { %>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Station de Départ</th>
+                            <th>Station d'Arrivée</th>
+                            <th>Heure de Départ</th>
+                            <% if (user && user.role === 'admin') { %> <th>Actions</th>     <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% trains.forEach(function(train) { %>
+                        <tr>
+                            <td><%= train.name %></td>
+                            <td><%= train.start_station.name %></td>
+                            <td><%= train.end_station.name %></td>
+                            <td><%= new Date(train.time_of_departure).toLocaleString() %></td>
+                            <td>
+                                <% if (user && user.role === 'admin') { %>
+                                    <a href="/trains/<%= train._id %>/edit" class="btn-edit">Modifier</a>
+                                    <form action="/trains/<%= train._id %>?_method=DELETE" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete">Supprimer</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>Aucun train trouvé.</p>
+            <% } %>
+        </section>
+    </main>
+
+    <%- include('partials/footer') %> 
+
+</body>
+</html>
