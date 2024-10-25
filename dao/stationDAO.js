@@ -12,7 +12,6 @@ class StationDAO {
             .limit(parseInt(limit));
     }
     
-    
     static async getStationById(stationId) {
         return await Station.findById(stationId);
     }
