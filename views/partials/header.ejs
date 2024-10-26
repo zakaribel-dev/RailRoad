@@ -2,11 +2,11 @@
     <nav>
         <ul>
             <li><a href="/" class="<%= currentUrl === '/' ? 'active' : '' %>">Accueil</a></li>
-            <li><a href="/trains" class="<%= currentUrl === '/trains' ? 'active' : '' %>">Gérer les Trains</a></li>
-            <li><a href="/stations" class="<%= currentUrl === '/stations' ? 'active' : '' %>">Gérer les Gares</a></li>
+            <li><a href="/trains" class="<%= currentUrl === '/trains' ? 'active' : '' %>">Trains</a></li>
+            <li><a href="/stations" class="<%= currentUrl === '/stations' ? 'active' : '' %>">Gares</a></li>
             <li><a href="/users/me" class="<%= currentUrl === '/users/me' ? 'active' : '' %>">Mon Profil</a></li>
             <li><a href="/tickets" class="<%= currentUrl === '/tickets' ? 'active' : '' %>">Réserver un Ticket</a></li>
-            <li><a href="/swagger" target="_blank" class="<%= currentUrl === '/swagger' ? 'active' : '' %>">Endpoints</a></li>
+            <li><a href="/swagger" target="_blank" class="<%= currentUrl === '/swagger' ? 'active' : '' %>">API</a></li>
 
             <% if (loggedIn) { %> 
                 <li><a href="/logout">Déconnexion</a></li>

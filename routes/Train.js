@@ -5,13 +5,15 @@ const validationMiddleware = require('../middlewares/validate');
 const { trainSchema } = require('../validations/trainValidation');
 const authMiddleware = require('../middlewares/auth');
 const adminMiddleware = require('../middlewares/admin');
+const getUserInfos = require ('../middlewares/getUserInfos')
 
 router.get('/getAll',trainController.getIndexPage);
 
 router.get('/create', authMiddleware, adminMiddleware, trainController.renderCreateTrainForm);
 
-router.get('/', authMiddleware,trainController.handleTrains);// endpoint perso (pour le front car ça me semble plus cohérent de se
-// connecter pour la gestion des trains)
+// getUserInfos c'est un middleware souple qui va principalement me permettre de recuperer le role du user
+// pour ma vue afin d'afficher les boutons d'actions ou non (par rapport à si l'utilisateur est admin ou non)
+router.get('/', getUserInfos,trainController.handleTrains);
 
 router.get('/:trainId', trainController.getTrainById);
 
