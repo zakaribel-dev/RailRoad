@@ -4,7 +4,8 @@
   "description": "Railroad company",
   "main": "app.js",
   "scripts": {
-    "test": "jest",
+    "train": "jest train.test.js",
+    "ticket": "jest ticket.test.js",
     "start": "nodemon app.js"
   },
   "author": "Zakaria",

@@ -56,7 +56,7 @@ To stay organized during the project, I used a Trello board to track progress, m
 This structure promotes scalability and maintainability by making the codebase easier to manage, debug, and extend.
 ## Tests
 
-npm test train.test.js <br>
+npm run train <br>
 or <br>
-npm test ticket.test.js
+npm run ticket
 
