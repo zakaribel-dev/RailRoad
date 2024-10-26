@@ -186,7 +186,7 @@ paths:
         '403':
           description: Accès refusé (seulement pour les admins)
 
-  /trains:
+  /trains/getAll:
     get:
       summary: Get all trains
       description: Accessible sans connexion pour récupérer la liste des trains
@@ -213,7 +213,7 @@ paths:
                       format: date-time
         '500':
           description: Erreur serveur
-
+  /trains:
     post:
       summary: Create a new train (admin only)
       security:
@@ -271,7 +271,7 @@ paths:
                     format: date-time
         '404':
           description: Train non trouvé
-
+  /trains:
     put:
       summary: Update a specific train (admin only)
       security:
@@ -297,7 +297,7 @@ paths:
           description: Train mis à jour
         '403':
           description: Accès refusé (seulement pour les admins)
-
+    /trains:
     delete:
       summary: Delete a specific train (admin only)
       security:
