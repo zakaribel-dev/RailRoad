@@ -40,6 +40,7 @@ PORT=3000
 ```bash
 npm start
 ```
+then go to http://localhost:3000/
 
 ## Organization and Task Management
 To stay organized during the project, I used a Trello board to track progress, manage tasks, and set priorities. This helped me meet deadlines and maintain an efficient workflow.
