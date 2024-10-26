@@ -5,7 +5,7 @@ const Train = require('../models/Train');
 const Station = require('../models/Station');
 require('dotenv').config();
 
-let testStartStationId;
+let testStartStationId; // explication de ces globales dans le test ticket
 let testEndStationId;
 let testTrainId;
 
@@ -46,7 +46,7 @@ afterAll(async () => {
     await mongoose.connection.close(); 
     server.close(); 
 });
-describe('Train API', () => {
+describe('Train test', () => {
 
     
     it('should create a new train', async () => {

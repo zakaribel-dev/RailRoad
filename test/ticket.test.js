@@ -5,7 +5,7 @@ const Train = require('../models/Train');
 const Station = require('../models/Station');
 require('dotenv').config();
 
-let testTrainId;
+let testTrainId; // jdéclare en global pour pouvoir l'utiliser à la fois dans betforeAll et "it" (pas besoin de recreer un nouveau train à chaque fois)
 
 beforeAll(async () => {
     await mongoose.connect(process.env.MONGODB_URI);
@@ -43,7 +43,7 @@ afterAll(async () => {
     server.close();
 });
 
-describe('Ticket API', () => {
+describe('Ticket test', () => {
 
 
     it('should reserve a ticket successfully', async () => {
