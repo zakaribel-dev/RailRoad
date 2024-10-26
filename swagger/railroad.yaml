@@ -8,7 +8,7 @@ servers:
     description: Local server
 
 paths:
-  /users/register:
+  /register:
     post:
       summary: Register a new user
       requestBody:
@@ -33,7 +33,7 @@ paths:
         '400':
           description: Erreur serveur
 
-  /users/login:
+  /login:
     post:
       summary: Login a user
       requestBody:

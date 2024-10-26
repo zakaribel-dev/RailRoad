@@ -14,13 +14,13 @@ class UserController {
         try {
             await UserService.createUser(req.body);
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) { // postman
+           if(req.headers.accept.includes('application/json')) { // postman
                 return res.status(200).json({ message: 'Inscription réussie' });
             }
 
             res.render('login', { error: null, loggedIn: false }); // front
         } catch (error) {
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(400).json({ message: error.message });
             }
             return res.status(400).render('register', { error: error.message });
@@ -34,13 +34,13 @@ class UserController {
 
             res.cookie('jwt', token, { httpOnly: true, secure: false });
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: 'Connexion réussie', user, token });
             }
 
             return res.redirect('/?message=Connexion%20réussie');
         } catch (error) {
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
             }
             return res.status(401).render('login', { error: 'Email ou mot de passe incorrect', loggedIn: false });
@@ -59,7 +59,7 @@ class UserController {
             const user = await UserService.getUserById(targetUserId);
             const loggedIn = req.cookies.jwt ? true : false;
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: "Voici le profil", user });
             }
 
@@ -76,7 +76,7 @@ class UserController {
             const targetUserId = req.params.id || userId; // "|| userId" au cas où je consulte mon propre profil
 
             const updatedUser = await UserService.updateUser(targetUserId, req.body);
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: "profil bien mis à jour !", updatedUser });
             }
 

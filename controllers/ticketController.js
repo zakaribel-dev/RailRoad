@@ -36,7 +36,7 @@ class TicketController {
                 ticket
             };
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json(responseMessage);
             }
 
@@ -62,7 +62,7 @@ class TicketController {
 
             const successMessage = 'Ticket validé avec succès, bon voyage :-)';
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: successMessage });
             }
 
@@ -73,7 +73,7 @@ class TicketController {
         } catch (error) {
             console.error('Erreur lors de la validation du billet:', error.message);
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(400).json({ message: error.message });
             }
 

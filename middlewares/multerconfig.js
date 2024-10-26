@@ -26,7 +26,7 @@ const resizeImage = async (req, res, next) => {
         next(); 
     } catch (error) {
         
-        if (req.headers.accept && req.headers.accept.includes('application/json')) {
+       if(req.headers.accept.includes('application/json')) {
             return res.status(500).json({ message: 'Erreur lors du traitement de l’image', error: error.message });
         }
         console.error('Erreur lors du traitement de l’image:', error);

@@ -47,7 +47,7 @@ class StationController {
 
             const newStation = await StationService.createStation(newStationData);
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({
                     message: "Nouvelle station créée avec succès." + (req.file ? " L'image a été redimensionnée à 200x200 pixels." : ""),
                     newStation
@@ -71,7 +71,7 @@ class StationController {
 
             const message = req.query.message || null;
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.json({ stations });
             } else {
                 return res.render('stations', {
@@ -84,7 +84,7 @@ class StationController {
         } catch (error) {
             console.error('Erreur lors de la récupération des stations:', error.message);
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(500).json({ message: 'Erreur serveur', error: error.message });
             } else {
                 return res.status(500).send('Erreur serveur');
@@ -127,7 +127,7 @@ class StationController {
 
             const updatedStation = await StationService.updateStation(stationId, updatedData);
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: 'Station bien modifiée', updatedStation });
             }
 
@@ -151,7 +151,7 @@ class StationController {
 
             await StationService.deleteStation(stationId);
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: 'Station supprimée avec succès' });
             }
 

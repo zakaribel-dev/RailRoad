@@ -48,7 +48,7 @@ class TrainController {
     static async getIndexPage(req, res) {
         try {
             const trains = await TrainService.getAllTrains(10);
-            if (req.headers.accept && req.headers.accept.includes('application/json')) { // Pour Postman
+            if (req.headers.accept.includes('application/json')) { // Pour Postman
                 return res.status(200).json({ trains });
             }
             const loggedIn = req.cookies.jwt ? true : false;
@@ -79,7 +79,7 @@ class TrainController {
                 time_of_departure
             });
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) { // Pour Postman
+           if(req.headers.accept.includes('application/json')) { // Pour Postman
                 return res.status(200).json({ message: 'Train bien ajouté.' });
             }
 
@@ -141,7 +141,7 @@ class TrainController {
                 time_of_departure
             });
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: 'Train bien modifié', updatedTrain });
             }
 
@@ -157,7 +157,7 @@ class TrainController {
         try {
             const deletedTrain = await TrainService.deleteTrain(trainId);
 
-            if (req.headers.accept && req.headers.accept.includes('application/json')) {
+           if(req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: 'Train bien supprimé', deletedTrain });
             }
 
