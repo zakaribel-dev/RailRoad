@@ -27,14 +27,13 @@ class TrainDAO {
   }
 
   
-  static async findTrains(query, limit, sortCondition) {
-    return await Train.find(query)
-      .populate("start_station")
-      .populate("end_station")
-      .sort(sortCondition)
-      .limit(limit);
+  static async findTrains(filterCondition, limit, sortCondition) {
+    return await Train.find(filterCondition)
+        .populate("start_station")
+        .populate("end_station")
+        .sort(sortCondition)
+        .limit(limit);
 }
-
 
   static async getTrainsByFilter(query, limit, sortCondition) {
     return await TrainDAO.findTrains(query, limit, sortCondition);

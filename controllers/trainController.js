@@ -47,10 +47,9 @@ class TrainController {
 
     static async getIndexPage(req, res) {
         try {
+        
             const trains = await TrainService.getAllTrains(10);
-            if (req.headers.accept.includes('application/json')) { // Pour Postman
-                return res.status(200).json({ trains });
-            }
+        
             const loggedIn = req.cookies.jwt ? true : false;
             // je n'applique pas authMiddleware à ma page principale car je veux qu'elle soit accessible meme en étant pas connecté.
             // alors du coup je requipere le token via le cookie qui est généré uniquement si on se connecte manuellement (via la vue login)
@@ -67,6 +66,21 @@ class TrainController {
     // FIN Renders ..
 
     // CRUD..
+
+    
+    static async getAllTrains(req, res) {
+        try {
+            const { start_station, end_station, sortBy } = req.query;
+            const limit = parseInt(req.query.limit)
+
+            const trains = await TrainService.getTrainsByFilter({ start_station, end_station }, limit, sortBy);
+
+            return res.status(200).json({ trains });
+        } catch (error) {
+            console.error('Erreur lors de la récupération des trains:', error.message);
+            return res.status(500).json({ message: 'Erreur serveur' });
+        }
+    }
 
     static async createTrain(req, res) {
         try {
@@ -102,18 +116,17 @@ class TrainController {
             return res.status(500).json({ message: error.message });
         }
     }
-
     static async handleTrains(req, res) {
         try {
             const { start_station, end_station, sortBy } = req.query;
-            const limit = parseInt(req.query.limit);
-
-            const trains = await TrainService.getTrainsByFilter({ start_station, end_station }, limit, sortBy);
+            const limit = req.query.params
+    
+            const trains = await TrainService.getTrainsForFrontend({ start_station, end_station, sortBy, limit });
             const stations = await Station.find();
-
+    
             const user = req.user;
             const loggedIn = user ? true : false;
-
+    
             return res.render('trains', {
                 trains,
                 stations,
@@ -125,10 +138,13 @@ class TrainController {
                 message: req.query.message || null
             });
         } catch (error) {
+            console.error('Erreur lors du rendu des trains:', error.message);
             return res.status(500).json({ message: error.message });
         }
     }
-
+    
+    
+    
     static async updateTrain(req, res) {
         const { trainId } = req.params;
         try {

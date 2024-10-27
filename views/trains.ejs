@@ -41,29 +41,34 @@
                 <% } %>
 
 
-            <form method="GET" action="/trains" class="filter-form">
-                <label for="start_station">Filtrer par station de départ :</label>
-                <select id="start_station" name="start_station">
-                    <option value="">Sélectionner une station de départ</option>
-                    <% stations.forEach(function(station) { %>
-                        <option value=""> >
-                            <%= station.name %>
-                        </option>
-                    <% }); %>
-                </select>
+                <form method="GET" action="/trains" class="filter-form">
+                    <label for="start_station">Filtrer par station de départ :</label>
+                    <select id="start_station" name="start_station">
+                        <option value="">Sélectionner une station de départ</option>
+                        <% stations.forEach(function(station) { %>
+                            <option value="<%= station.name %>"><%= station.name %></option>
+                        <% }); %>
+                    </select>
+                
+                    <label for="end_station">Filtrer par station d'arrivée :</label>
+                    <select id="end_station" name="end_station">
+                        <option value="">Sélectionner une station d'arrivée</option>
+                        <% stations.forEach(function(station) { %>
+                            <option value="<%= station.name %>"><%= station.name %></option>
+                        <% }); %>
+                    </select>
+                
+                    <label for="sortBy">Trier par :</label>
+                    <select id="sortBy" name="sortBy">
+                        <option value="time_of_departure">Date de départ</option>
+                        <option value="start_station">Station de départ</option>
+                        <option value="end_station">Station d'arrivée</option>
+                    </select>
+                
+                    <button type="submit" class="btn">Trier</button>
+                </form>
+                
 
-                <label for="end_station">Filtrer par station d'arrivée :</label>
-                <select id="end_station" name="end_station">
-                    <option value="">Sélectionner une station d'arrivée</option>
-                    <% stations.forEach(function(station) { %>
-                        <option value="""> >
-                            <%= station.name %>
-                        </option>
-                    <% }); %>
-                </select>
-
-                <button type="submit" name="sortBy" value="time_of_departure" class="btn">Trier</button>
-            </form>
         </section>
 
         <section>

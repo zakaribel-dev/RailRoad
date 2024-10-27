@@ -7,7 +7,7 @@ const authMiddleware = require('../middlewares/auth');
 const adminMiddleware = require('../middlewares/admin');
 const getUserInfos = require ('../middlewares/getUserInfos')
 
-router.get('/getAll',trainController.getIndexPage);
+router.get('/getAll', trainController.getAllTrains);
 
 router.get('/create', authMiddleware, adminMiddleware, trainController.renderCreateTrainForm);
 

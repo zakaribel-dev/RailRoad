@@ -189,7 +189,34 @@ paths:
   /trains/getAll:
     get:
       summary: Get all trains
-      description: Accessible sans connexion pour récupérer la liste des trains
+      description: Accessible without login to retrieve the list of trains. Supports filtering by start and end station, sorting by departure time, and limiting the number of results.
+      parameters:
+        - name: start_station
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Name of the start station to filter trains
+        - name: end_station
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Name of the end station to filter trains
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [time_of_departure, start_station, end_station]
+          description: Field to sort the results by (e.g., time_of_departure, start_station, end_station)
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          description: Limit the number of results returned (default is 10, can be adjusted)
       responses:
         '200':
           description: Liste des trains retournée
@@ -213,6 +240,7 @@ paths:
                       format: date-time
         '500':
           description: Erreur serveur
+
   /trains:
     post:
       summary: Create a new train (admin only)
@@ -271,6 +299,7 @@ paths:
                     format: date-time
         '404':
           description: Train non trouvé
+
   /trains:
     put:
       summary: Update a specific train (admin only)
@@ -297,7 +326,7 @@ paths:
           description: Train mis à jour
         '403':
           description: Accès refusé (seulement pour les admins)
-    /trains:
+
     delete:
       summary: Delete a specific train (admin only)
       security:
