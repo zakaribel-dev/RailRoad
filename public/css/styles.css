@@ -4,6 +4,18 @@ html, body {
     padding: 0;
 }
 
+
+.message-success {
+    color: green;
+    font-weight: bold;
+}
+
+.message-error {
+    color: red;
+    font-weight: bold;
+}
+
+
 body {
     display: flex;
     flex-direction: column;

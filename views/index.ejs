@@ -10,9 +10,11 @@
 <body>
     <%- include('partials/header') %> 
 
-    <% if (typeof message !== 'undefined' && message) { %>
-        <p style="color: green;"><%= message %></p>
-    <% } %>
+<% if (typeof message !== 'undefined' && message) { %>
+    <p class="<%= error === 'true' ? 'message-error' : 'message-success' %>"><%= message %></p>
+<% } %>
+
+
     <main>
         <section>
             <h2>À propos de RailRoad</h2>

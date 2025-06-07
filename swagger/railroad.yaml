@@ -3,6 +3,7 @@ info:
   title: RailRoad API
   description: API for managing trains, stations, tickets, and users
   version: 1.0.0
+
 servers:
   - url: http://localhost:3000
     description: Local server
@@ -268,39 +269,6 @@ paths:
         '403':
           description: Accès refusé (seulement pour les admins)
 
-  /trains/{id}:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-        description: ID du train
-    get:
-      summary: Get details of a specific train
-      responses:
-        '200':
-          description: Détails du train retournés
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  name:
-                    type: string
-                  start_station:
-                    type: string
-                  end_station:
-                    type: string
-                  time_of_departure:
-                    type: string
-                    format: date-time
-        '404':
-          description: Train non trouvé
-
-  /trains:
     put:
       summary: Update a specific train (admin only)
       security:
@@ -336,6 +304,38 @@ paths:
           description: Train supprimé
         '403':
           description: Accès refusé (seulement pour les admins)
+
+  /trains/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID du train
+    get:
+      summary: Get details of a specific train
+      responses:
+        '200':
+          description: Détails du train retournés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  start_station:
+                    type: string
+                  end_station:
+                    type: string
+                  time_of_departure:
+                    type: string
+                    format: date-time
+        '404':
+          description: Train non trouvé
 
   /tickets:
     post:

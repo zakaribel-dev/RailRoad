@@ -1,106 +1,115 @@
-const UserService = require('../services/userService');
+const UserService = require("../services/userService");
+const { ERRORS } = require("../utils/errors");
 
 class UserController {
-    static renderRegister(req, res) {
-        return res.render('register', { error: null });
+  static renderRegister(req, res) {
+  const error = req.query.message || null;
+  return res.render("register", { error });
+
+}
+
+  static renderLogin(req, res) {
+    const error = req.query.message || null;
+    return res.render("login", { error });
+  }
+
+  static async registerUser(req, res, next) {
+    try {
+      await UserService.createUser(req.body);
+
+      if (req.headers.accept.includes("application/json")) {
+        // postman
+        return res.status(200).json({ message: "Inscription réussie" });
+      }
+
+      res.render("login", { error: null, loggedIn: false }); // front
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static renderLogin(req, res) {
-        const error = req.query.message || null;
-        return res.render('login', { error });
+  static async loginUser(req, res, next) {
+    const { email, password } = req.body;
+    try {
+      const { user, token } = await UserService.authenticateUser(email, password);
+
+      res.cookie("jwt", token, { httpOnly: true, secure: false });
+
+      if (req.headers.accept.includes("application/json")) {
+        return res.status(200).json({ message: "Connexion réussie", user, token });
+      }
+
+      return res.redirect("/?message=Connexion%20réussie");
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static async registerUser(req, res) {
-        try {
-            await UserService.createUser(req.body);
+  static async getUserProfile(req, res, next) {
+    try {
+      const userId = req.user.id; // ID de l'utilisateur connecté
+      const targetUserId = req.params.id || userId; // "|| userId" au cas où je consulte mon propre profil
+      const error = req.query.message || null;
 
-           if(req.headers.accept.includes('application/json')) { // postman
-                return res.status(200).json({ message: 'Inscription réussie' });
-            }
+      if (
+        userId !== targetUserId &&
+        req.user.role !== "employee" &&
+        req.user.role !== "admin"
+      ) {
+        return next({ ...ERRORS.ACCESS_DENIED, status: 403 });
+      }
 
-            res.render('login', { error: null, loggedIn: false }); // front
-        } catch (error) {
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(400).json({ message: error.message });
-            }
-            return res.status(400).render('register', { error: error.message });
-        }
+      const user = await UserService.getUserById(targetUserId);
+      const loggedIn = req.cookies.jwt ? true : false;
+
+      if (req.headers.accept.includes("application/json")) {
+        return res.status(200).json({ message: "Voici le profil", user });
+      }
+
+      return res.render("profile", { user, loggedIn, error });
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static async loginUser(req, res) {
-        const { email, password } = req.body;
-        try {
-            const { user, token } = await UserService.authenticateUser(email, password);
+  static async updateProfile(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const targetUserId = req.params.id || userId; // "|| userId" au cas où jupdate mon propre profil
 
-            res.cookie('jwt', token, { httpOnly: true, secure: false });
+      const updatedUser = await UserService.updateUser(targetUserId, req.body);
+      if (req.headers.accept.includes("application/json")) {
+        return res
+          .status(200)
+          .json({ message: "profil bien mis à jour !", updatedUser });
+      }
 
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(200).json({ message: 'Connexion réussie', user, token });
-            }
-
-            return res.redirect('/?message=Connexion%20réussie');
-        } catch (error) {
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(401).json({ message: 'Email ou mot de passe incorrect' });
-            }
-            return res.status(401).render('login', { error: 'Email ou mot de passe incorrect', loggedIn: false });
-        }
+      return res.redirect("/?message=Profil bien mis à jour!");
+    } catch (error) {
+      return next(error); 
     }
+  }
 
-    static async getUserProfile(req, res) {
-        try {
-            const userId = req.user.id; // ID de l'utilisateur connecté
-            const targetUserId = req.params.id || userId; // "|| userId" au cas où je consulte mon propre profil
+  static async deleteProfile(req, res, next) {
+    try {
+      const userId = req.user.id;
+      let targetUserId = req.params.id || userId;
 
-            if (userId !== targetUserId && req.user.role !== 'employee' && req.user.role !== 'admin') {
-                return res.status(403).json({ message: 'Accès refusé' });
-            }
+      if (targetUserId === "me") {
+        targetUserId = userId;
+      }
 
-            const user = await UserService.getUserById(targetUserId);
-            const loggedIn = req.cookies.jwt ? true : false;
+      await UserService.deleteUser(targetUserId);
 
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(200).json({ message: "Voici le profil", user });
-            }
+      if (req.headers.accept.includes("application/json")) {
+        return res.status(200).json({ message: "Compte bien supprimé" });
+      }
 
-            return res.render('profile', { user, loggedIn });
-        } catch (error) {
-            console.error('Erreur lors de la récupération de l\'utilisateur:', error.message);
-            return res.status(500).send('Erreur serveur');
-        }
+      return res.redirect("/?message=Compte bien supprimé");
+    } catch (error) {
+      return next(error);
     }
-
-    static async updateProfile(req, res) {
-        try {
-            const userId = req.user.id;
-            const targetUserId = req.params.id || userId; // "|| userId" au cas où je consulte mon propre profil
-
-            const updatedUser = await UserService.updateUser(targetUserId, req.body);
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(200).json({ message: "profil bien mis à jour !", updatedUser });
-            }
-
-            return res.redirect('/?message=Profil bien mis à jour!');
-        } catch (error) {
-            res.status(400).json({ message: error.message });
-        }
-    }
-
-    static async deleteProfile(req, res) {
-        try {
-            const userId = req.user.id;
-            let targetUserId = req.params.id || userId;
-
-            if (targetUserId === 'me') {
-                targetUserId = userId;
-            }
-
-            await UserService.deleteUser(targetUserId);
-            return res.status(200).json({ message: 'Compte bien supprimé' });
-        } catch (error) {
-            return res.status(400).json({ message: error.message });
-        }
-    }
+  }
 }
 
 module.exports = UserController;

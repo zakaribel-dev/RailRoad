@@ -1,50 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Profil</title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon Profil</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
     <%- include('partials/header') %>
 
-    <main>
+        <main>
+            <% if (error) { %>
+                <p class="error-message">
+                    <%= error %>
+                </p>
+                <% } %>
 
-    
-        <section>
+                    <section>
+                        <h2>Profil de <%= user.pseudo %>
+                        </h2>
+                        <p><strong>Email:</strong>
+                            <%= user.email %>
+                        </p>
+                        <p><strong>Rôle:</strong>
+                            <%= user.role %>
+                        </p>
+                    </section>
 
-            <h2>Profil de <%= user.pseudo %></h2>
-                <p><strong>Email:</strong> <%= user.email %></p>
-                <p><strong>Rôle:</strong> <%= user.role %></p>
-        </section>
+                    <section class="profile-update">
+                        <h2>Mettre à jour mon profil</h2>
+                        <form action="/users/me?_method=PUT" method="POST" class="form-group">
+                            <label for="email">Email :</label>
+                            <input type="email" id="email" name="email" value="<%= user.email %>" required />
 
-        <section class="profile-update">
-            <h2>Mettre à jour mon profil</h2>
-            <form action="/users/me?_method=PUT" method="POST" class="form-group">
-                <label for="email">Email :</label>
-                <input type="email" id="email" name="email" value="<%= user.email %>" required>
+                            <label for="pseudo">Pseudo :</label>
+                            <input type="text" id="pseudo" name="pseudo" value="<%= user.pseudo %>" required />
 
-                <label for="pseudo">Pseudo :</label>
-                <input type="text" id="pseudo" name="pseudo" value="<%= user.pseudo %>" required>
+                            <label for="password">Mot de passe :</label>
+                            <input type="password" id="password" name="password"
+                                placeholder="Votre mot de passe (entrez votre mot de passe actuel si vous ne souhaitez pas le modifier)"
+                                required />
 
-                <label for="password">Mot de passe :</label>
-                <input type="password" id="password" name="password"  placeholder="Votre mot de passe (entrez votre mot de passe actuel si vous ne souhaitez pas le modifier)" required>
+                            <button class="btn" type="submit">Mettre à jour</button>
+                        </form>
+                    </section>
 
-                <button class="btn" type="submit">Mettre à jour</button>
-            </form>
-        </section>
+                    <section class="profile-delete">
+                        <h2>Supprimer mon compte</h2>
+                        <form action="/users/me?_method=DELETE" method="POST">
+                            <button class="btn btn-delete" type="submit">
+                                Supprimer mon compte
+                            </button>
+                        </form>
+                    </section>
+        </main>
 
-        <section class="profile-delete">
-            <h2>Supprimer mon compte</h2>
-            <form action="/users/me?_method=DELETE" method="POST">
-                <button class="btn btn-delete" type="submit">Supprimer mon compte</button>
-            </form>
-        </section>
-    </main>
-
-    <%- include('partials/footer') %> 
-
+        <%- include('partials/footer') %>
 </body>
+
 </html>

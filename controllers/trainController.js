@@ -4,7 +4,7 @@ const Train = require('../models/Train');
 
 class TrainController {
     // Renders ..
-    static async renderCreateTrainForm(req, res) {
+    static async renderCreateTrainForm(req, res, next) {
         try {
             const loggedIn = req.cookies.jwt ? true : false;
 
@@ -17,20 +17,16 @@ class TrainController {
                 loggedIn
             });
         } catch (error) {
-            console.error('Erreur:', error);
-            return res.status(500).json({ message: 'Erreur serveur' });
+            return next(error);
         }
     }
 
-    static async renderEditTrainForm(req, res) {
+    static async renderEditTrainForm(req, res, next) {
         const { trainId } = req.params;
         try {
             const loggedIn = req.cookies.jwt ? true : false;
 
             const train = await TrainService.getTrainById(trainId);
-            if (!train) {
-                return res.status(404).json({ message: "Train non trouvé." });
-            }
 
             const stations = await Station.find();
             return res.render('trainForm', {
@@ -41,25 +37,24 @@ class TrainController {
                 loggedIn
             });
         } catch (error) {
-            return res.status(500).json({ message: 'Erreur serveur' });
+            return next(error);
         }
     }
 
-    static async getIndexPage(req, res) {
+    static async getIndexPage(req, res, next) {
         try {
-        
             const trains = await TrainService.getAllTrains(10);
-        
+
             const loggedIn = req.cookies.jwt ? true : false;
             // je n'applique pas authMiddleware à ma page principale car je veux qu'elle soit accessible meme en étant pas connecté.
             // alors du coup je requipere le token via le cookie qui est généré uniquement si on se connecte manuellement (via la vue login)
 
-            const message = req.query.message || null; // message dans l'url ou null
+            const message = req.query.message || null;
+            const error = req.query.error || null;
 
-            return res.render('index', { trains, loggedIn, message });
+            return res.render('index', { trains, loggedIn, message, error });
         } catch (error) {
-            console.error('Erreur lors de la récupération des trains:', error.message);
-            return res.status(500).json({ message: 'Erreur serveur' });
+            return next(error);
         }
     }
 
@@ -67,22 +62,21 @@ class TrainController {
 
     // CRUD..
 
-    
-    static async getAllTrains(req, res) {
+    static async getAllTrains(req, res, next) {
         try {
             const { start_station, end_station, sortBy } = req.query;
-            const limit = parseInt(req.query.limit)
+            const limit = parseInt(req.query.limit);
 
             const trains = await TrainService.getTrainsByFilter({ start_station, end_station }, limit, sortBy);
+            const error = req.query.error || null;
 
-            return res.status(200).json({ trains });
+            return res.status(200).json({ trains, error });
         } catch (error) {
-            console.error('Erreur lors de la récupération des trains:', error.message);
-            return res.status(500).json({ message: 'Erreur serveur' });
+            return next(error);
         }
     }
 
-    static async createTrain(req, res) {
+    static async createTrain(req, res, next) {
         try {
             const { name, start_station, end_station, time_of_departure } = req.body;
 
@@ -93,40 +87,38 @@ class TrainController {
                 time_of_departure
             });
 
-           if(req.headers.accept.includes('application/json')) { // Pour Postman
+            if (req.headers.accept.includes('application/json')) { // Pour Postman
                 return res.status(200).json({ message: 'Train bien ajouté.' });
             }
 
             res.redirect('/trains?message=nouveau%20train%20ajouté');
         } catch (error) {
-            console.error('Erreur:', error.message);
-            return res.status(400).json({ message: error.message });
+            return next(error);
         }
     }
 
-    static async getTrainById(req, res) {
+    static async getTrainById(req, res, next) {
         const { trainId } = req.params;
         try {
             const train = await TrainService.getTrainById(trainId);
-            if (!train) {
-                return res.status(404).json({ message: "Train non trouvé." });
-            }
             return res.status(200).json({ train });
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            return next(error);
         }
     }
-    static async handleTrains(req, res) {
+
+    static async handleTrains(req, res, next) {
         try {
             const { start_station, end_station, sortBy } = req.query;
-            const limit = req.query.params
-    
+            const limit = req.query.limit;
+
             const trains = await TrainService.getTrainsForFrontend({ start_station, end_station, sortBy, limit });
             const stations = await Station.find();
-    
+
             const user = req.user;
             const loggedIn = user ? true : false;
-    
+            const error = req.query.error || null;
+
             return res.render('trains', {
                 trains,
                 stations,
@@ -135,17 +127,15 @@ class TrainController {
                 selectedStartStation: start_station,
                 selectedEndStation: end_station,
                 sortBy,
-                message: req.query.message || null
+                message: req.query.message || null,
+                error
             });
         } catch (error) {
-            console.error('Erreur lors du rendu des trains:', error.message);
-            return res.status(500).json({ message: error.message });
+            return next(error);
         }
     }
-    
-    
-    
-    static async updateTrain(req, res) {
+
+    static async updateTrain(req, res, next) {
         const { trainId } = req.params;
         try {
             const { name, start_station, end_station, time_of_departure } = req.body;
@@ -157,30 +147,28 @@ class TrainController {
                 time_of_departure
             });
 
-           if(req.headers.accept.includes('application/json')) {
+            if (req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: 'Train bien modifié', updatedTrain });
             }
 
             res.redirect('/trains?message=train%20modifié');
         } catch (error) {
-            console.error('Erreur lors de la modification du train:', error.message);
-            return res.status(400).json({ message: error.message });
+            return next(error);
         }
     }
 
-    static async deleteTrain(req, res) {
+    static async deleteTrain(req, res, next) {
         const { trainId } = req.params;
         try {
             const deletedTrain = await TrainService.deleteTrain(trainId);
 
-           if(req.headers.accept.includes('application/json')) {
+            if (req.headers.accept.includes('application/json')) {
                 return res.status(200).json({ message: 'Train bien supprimé', deletedTrain });
             }
 
             return res.redirect('/trains?message=Train%20supprimé%20avec%20succès');
         } catch (error) {
-            console.error(error.message);
-            return res.status(400).json({ message: error.message });
+            return next(error);
         }
     }
 }

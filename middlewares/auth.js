@@ -19,7 +19,7 @@ const authMiddleware = (req, res, next) => {
     }
 
     if (!token) {
-        return res.redirect('/?message=Vous devez vous connecter !');
+        return res.redirect('/?message=Vous devez vous connecter !&error=true');
     }
 
     try {

@@ -1,168 +1,146 @@
 const StationService = require('../services/stationService');
 const Train = require('../models/Train');
+const { ERRORS } = require('../utils/errors');
 
 class StationController {
-    static renderCreateStationForm(req, res) {
-        const loggedIn = req.cookies.jwt ? true : false;
+  static renderCreateStationForm(req, res) {
+    const loggedIn = req.cookies.jwt ? true : false;
 
-        return res.render('stationForm', {
-            formTitle: 'Créer une nouvelle Station',
-            action: '/stations',
-            station: null,
-            loggedIn
-        });
+    return res.render('stationForm', {
+      formTitle: 'Créer une nouvelle Station',
+      action: '/stations',
+      station: null,
+      loggedIn
+    });
+  }
+
+  static async renderEditStationForm(req, res, next) {
+    const { stationId } = req.params;
+    const loggedIn = req.cookies.jwt ? true : false;
+
+    try {
+      const station = await StationService.getStationById(stationId);
+
+      return res.render('stationForm', {
+        formTitle: 'Modifier la Station',
+        action: `/stations/${stationId}?_method=PUT`,
+        station,
+        loggedIn
+      });
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static async renderEditStationForm(req, res) {
-        const { stationId } = req.params;
-        const loggedIn = req.cookies.jwt ? true : false;
+  static async createStation(req, res, next) {
+    try {
+      const { name, open_hour, close_hour } = req.body;
 
-        try {
-            const station = await StationService.getStationById(stationId);
-            if (!station) {
-                return res.status(404).json({ message: 'Station introuvable' });
-            }
+      const newStationData = {
+        name,
+        open_hour,
+        close_hour,
+        image: req.file ? req.file.filename : null
+      };
 
-            return res.render('stationForm', {
-                formTitle: 'Modifier la Station',
-                action: `/stations/${stationId}?_method=PUT`,
-                station,
-                loggedIn
-            });
-        } catch (error) {
-            return res.status(500).send('Erreur serveur');
-        }
+      const newStation = await StationService.createStation(newStationData);
+
+      const successMessage = "Nouvelle station créée avec succès." + (req.file ? " L'image a été redimensionnée à 200x200 pixels." : "");
+
+      if (req.headers.accept.includes('application/json')) {
+        return res.status(200).json({ message: successMessage, newStation });
+      }
+
+      return res.redirect("/stations?message=" + encodeURIComponent(successMessage));
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static async createStation(req, res) {
-        try {
-            const { name, open_hour, close_hour } = req.body;
+  static async getAllStations(req, res, next) {
+    try {
+      const { sortBy = 'name', limit = 10 } = req.query;
+      const stations = await StationService.getAllStations(sortBy, limit);
 
-            const newStationData = {
-                name,
-                open_hour,
-                close_hour,
-                image: req.file ? req.file.filename : null
-            };
+      const user = req.user || null;
+      const loggedIn = !!req.user;
+      const message = req.query.message || null;
+      const error = req.query.error || null;
 
-            const newStation = await StationService.createStation(newStationData);
+      if (req.headers.accept.includes('application/json')) {
+        return res.json({ stations });
+      }
 
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(200).json({
-                    message: "Nouvelle station créée avec succès." + (req.file ? " L'image a été redimensionnée à 200x200 pixels." : ""),
-                    newStation
-                });
-            }
-
-            return res.redirect("/stations?message=Nouvelle station créée avec succès." + (req.file ? " L'image a été redimensionnée à 200x200 pixels." : ""));
-        } catch (error) {
-            console.error('Erreur lors de la création de la station:', error.message);
-            return res.status(400).json({ message: error.message });
-        }
+      return res.render('stations', {
+        stations,
+        user,
+        loggedIn,
+        message,
+        error
+      });
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static async getAllStations(req, res) {
-        try {
-            const { sortBy = 'name', limit = 10 } = req.query;
-            const stations = await StationService.getAllStations(sortBy, limit);
-
-            const user = req.user || null;
-            const loggedIn = !!req.user;
-
-            const message = req.query.message || null;
-
-           if(req.headers.accept.includes('application/json')) {
-                return res.json({ stations });
-            } else {
-                return res.render('stations', {
-                    stations,
-                    user,
-                    loggedIn,
-                    message
-                });
-            }
-        } catch (error) {
-            console.error('Erreur lors de la récupération des stations:', error.message);
-
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(500).json({ message: 'Erreur serveur', error: error.message });
-            } else {
-                return res.status(500).send('Erreur serveur');
-            }
-        }
+  static async getStationById(req, res, next) {
+    try {
+      const { stationId } = req.params;
+      const station = await StationService.getStationById(stationId);
+      return res.status(200).json({ station });
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static async getStationById(req, res) {
-        const { stationId } = req.params;
-        try {
-            const station = await StationService.getStationById(stationId);
-            if (!station) {
-                return res.status(404).json({ message: 'Station non trouvée' });
-            }
-            return res.status(200).json({ station });
-        } catch (error) {
-            return res.status(500).json({ message: error.message });
-        }
+  static async updateStation(req, res, next) {
+    try {
+      const { stationId } = req.params;
+
+      const existingStation = await StationService.getStationById(stationId);
+
+      const updatedData = {
+        name: req.body.name || existingStation.name,
+        open_hour: req.body.open_hour || existingStation.open_hour,
+        close_hour: req.body.close_hour || existingStation.close_hour,
+        image: req.file ? req.file.filename : existingStation.image
+      };
+
+      const updatedStation = await StationService.updateStation(stationId, updatedData);
+
+      if (req.headers.accept.includes('application/json')) {
+        return res.status(200).json({ message: 'Station bien modifiée', updatedStation });
+      }
+
+      return res.redirect('/stations?message=Station%20bien%20modifiée');
+    } catch (error) {
+      return next(error);
     }
+  }
 
-    static async updateStation(req, res) {
-        const { stationId } = req.params;
+  static async deleteStation(req, res, next) {
+    try {
+      const { stationId } = req.params;
 
-        try {
+      const isStationLinked = await Train.findOne({
+        $or: [{ start_station: stationId }, { end_station: stationId }]
+      });
 
-        //je cherche à recuperer la station actuelle pour pouvoir renvoyer l'image actuelle si l'user n'envoie pas de nouvelle image
-        //pareil pour le reste
-            const existingStation = await StationService.getStationById(stationId);
+      if (isStationLinked) {
+        throw { ...ERRORS.STATION_LINKED_TO_TRAIN, status: 400 };
+      }
 
-            if (!existingStation) {
-                return res.status(404).json({ message: 'Station non trouvée, tu t\'es trompé d\'ID non ?' });
-            }
+      await StationService.deleteStation(stationId);
 
-            const updatedData = {
-                name: req.body.name || existingStation.name,
-                open_hour: req.body.open_hour || existingStation.open_hour,
-                close_hour: req.body.close_hour || existingStation.close_hour,
-                image: req.file ? req.file.filename : existingStation.image
-            };
+      if (req.headers.accept.includes('application/json')) {
+        return res.status(200).json({ message: 'Station supprimée avec succès' });
+      }
 
-            const updatedStation = await StationService.updateStation(stationId, updatedData);
-
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(200).json({ message: 'Station bien modifiée', updatedStation });
-            }
-
-            return res.redirect('/stations?message=Station%20bien%20modifiée');
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour de la station:', error.message);
-            return res.status(400).json({ message: error.message });
-        }
+      return res.redirect('/stations?message=Station%20supprimée%20avec%20succès');
+    } catch (error) {
+      return next(error);
     }
-
-    static async deleteStation(req, res) {
-        const { stationId } = req.params;
-        try {
-            const isStationLinked = await Train.findOne({
-                $or: [{ start_station: stationId }, { end_station: stationId }]
-            });
-
-            if (isStationLinked) {
-                return res.status(400).json({ message: 'Cette station est liée à un ou plusieurs trains ou tickets et ne peut pas être supprimée.' });
-            }
-
-            await StationService.deleteStation(stationId);
-
-           if(req.headers.accept.includes('application/json')) {
-                return res.status(200).json({ message: 'Station supprimée avec succès' });
-            }
-
-            return res.redirect('/stations?message=Station%20supprimée%20avec%20succès');
-        } catch (error) {
-            console.error('Erreur lors de la suppression de la station:', error.message);
-            return res.status(400).json({ message: error.message });
-        }
-    }
+  }
 }
 
 module.exports = StationController;
-
-

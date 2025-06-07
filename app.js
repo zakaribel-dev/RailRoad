@@ -8,6 +8,8 @@ const sanitizer = require("perfect-express-sanitizer");
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs'); // pour pouvoir load des fichier yaml
 const swaggerDocument = YAML.load('./swagger/railroad.yaml'); 
+const errorHandler = require('./middlewares/errorHandler')
+const { ERRORS } = require('./utils/errors'); 
 
 require('dotenv').config();
 require('./config/db'); 
@@ -59,15 +61,13 @@ app.use('/uploads', express.static('public/uploads'));
 app.use(express.static('public'));
 
 app.use((req, res) => {
-    res.status(404).json({ message: 'Route non trouvée' });
+    res.status(ERRORS.ROUTE_NOT_FOUND.code).render('404', {
+        error: ERRORS.ROUTE_NOT_FOUND
+    });
 });
 
 
-app.use((err, req, res, next) => {
-    console.error('Erreur serveur:', err);
-    res.status(500).json({ message: 'Erreur serveur', error: err.message });
-});
-
+app.use(errorHandler);
 
 const PORT = process.env.PORT
 const server = app.listen(PORT, () => {

@@ -1,21 +1,26 @@
-const TicketDAO = require('../dao/ticketDAO');
+const TicketDAO = require("../dao/ticketDAO");
+const { ERRORS } = require("../utils/errors");
 
 class TicketService {
+  static async bookTicket(userId, trainId) {
+    const ticketData = {
+      userId: userId,
+      trainId: trainId,
+      isValid: false,
+    };
+    return await TicketDAO.createTicket(ticketData);
+  }
 
-    static async bookTicket(userId, trainId) {
-        const ticketData = {
-            userId: userId,
-            trainId: trainId,
-            isValid: false 
-        };
-        return await TicketDAO.createTicket(ticketData);
+  static async validateTicket(ticketId) {
+    const updateData = { isValid: true };
+    const updatedTicket = await TicketDAO.validateTicket(ticketId, updateData);
+
+    if (!updatedTicket) {
+      throw { ...ERRORS.TICKET_VALIDATION_FAILED, status: 400 };
     }
 
-    static async validateTicket(ticketId) {
- 
-        const updateData = { isValid: true };
-        return await TicketDAO.validateTicket(ticketId, updateData);
-    }
+    return updatedTicket;
+  }
 }
 
 module.exports = TicketService;

@@ -9,8 +9,11 @@
 <body>
 
     <%- include('partials/header') %>
-
+  
     <main>
+            <% if (error) { %>
+                <p class="error-message"><%= error %></p>
+            <% } %>
         <section>
             <h1>Liste des Stations</h1>
             <nav>
