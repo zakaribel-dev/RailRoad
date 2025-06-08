@@ -61,7 +61,7 @@ app.use('/uploads', express.static('public/uploads'));
 app.use(express.static('public'));
 
 app.use((req, res) => {
-    res.status(ERRORS.ROUTE_NOT_FOUND.code).render('404', {
+    res.status(ERRORS.ROUTE_NOT_FOUND.status).render('404', {
         error: ERRORS.ROUTE_NOT_FOUND
     });
 });
