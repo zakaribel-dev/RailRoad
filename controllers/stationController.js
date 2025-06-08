@@ -127,7 +127,7 @@ class StationController {
       });
 
       if (isStationLinked) {
-        throw { ...ERRORS.STATION_LINKED_TO_TRAIN, status: 400 };
+        throw ERRORS.STATION_LINKED_TO_TRAIN
       }
 
       await StationService.deleteStation(stationId);

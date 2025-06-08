@@ -8,8 +8,7 @@ class UserService {
   static async getUserById(userId) {
     const user = await UserDAO.getUserById(userId);
     if (!user) {
-      const err = { ...ERRORS.USER_NOT_FOUND, status: 404 };
-      throw err;
+      throw ERRORS.USER_NOT_FOUND;
     }
     return user;
   }
@@ -19,8 +18,7 @@ class UserService {
 
     const existingUser = await UserDAO.getUserByEmail(email);
     if (existingUser) {
-      const err = { ...ERRORS.EMAIL_ALREADY_USED, status: 400 };
-      throw err;
+      throw ERRORS.EMAIL_ALREADY_USED;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,14 +36,12 @@ class UserService {
   static async authenticateUser(email, password) {
     const user = await UserDAO.getUserByEmail(email);
     if (!user) {
-      const err = { ...ERRORS.USER_NOT_FOUND, status: 404 };
-      throw err;
+      throw ERRORS.USER_NOT_FOUND;
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      const err = { ...ERRORS.WRONG_PASSWORD, status: 401 };
-      throw err;
+      throw ERRORS.WRONG_PASSWORD;
     }
 
     const token = jwt.sign({ id: user._id, role: user.role, username: user.pseudo }, process.env.JWT_SECRET, {

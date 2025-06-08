@@ -10,8 +10,7 @@ class TrainService {
   static async getTrainById(trainId) {
     const train = await TrainDAO.findTrainById(trainId);
     if (!train) {
-      const err = { ...ERRORS.TRAIN_NOT_FOUND, status: 404 };
-      throw err;
+      throw ERRORS.TRAIN_NOT_FOUND;
     }
     return train;
   }
@@ -35,8 +34,7 @@ class TrainService {
     if (station) {
       return station._id;
     } else {
-      const err = { ...ERRORS.STATION_NOT_FOUND, status: 404 };
-      throw err;
+      throw ERRORS.STATION_NOT_FOUND;
     }
   }
   static async getTrainsByFilter(query, limit = 15, sortCondition) {
@@ -67,8 +65,7 @@ class TrainService {
 
       return await TrainDAO.findTrains(filterCondition, limit, sort);
     } catch (error) {
-      const err = { ...ERRORS.FETCH_TRAIN_ERROR, status: 500 };
-      throw err;
+      throw ERRORS.FETCH_TRAIN_ERROR;
     }
   }
 
@@ -86,8 +83,7 @@ class TrainService {
       );
       return trains;
     } catch (error) {
-      const err = { ...ERRORS.FRONTEND_TRAIN_ERROR, status: 500 };
-      throw err;
+      throw ERRORS.FRONTEND_TRAIN_ERROR
     }
   }
 }

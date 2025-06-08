@@ -16,7 +16,7 @@ class TicketService {
     const updatedTicket = await TicketDAO.validateTicket(ticketId, updateData);
 
     if (!updatedTicket) {
-      throw { ...ERRORS.TICKET_VALIDATION_FAILED, status: 400 };
+      throw ERRORS.TICKET_VALIDATION_FAILED
     }
 
     return updatedTicket;

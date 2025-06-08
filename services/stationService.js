@@ -13,8 +13,7 @@ class StationService {
   static async getStationById(stationId) {
     const station = await StationDAO.getStationById(stationId);
     if (!station) {
-      const err = { ...ERRORS.STATION_NOT_FOUND, status: 404 };
-      throw err;
+      throw ERRORS.STATION_NOT_FOUND
     }
     return station;
   }
