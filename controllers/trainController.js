@@ -7,6 +7,7 @@ class TrainController {
     static async renderCreateTrainForm(req, res, next) {
         try {
             const loggedIn = req.cookies.jwt ? true : false;
+                const error = req.query.error || null;
 
             const stations = await Station.find();
             return res.render('trainForm', {
@@ -14,7 +15,8 @@ class TrainController {
                 action: '/trains',
                 train: null,
                 stations,
-                loggedIn
+                loggedIn,
+                error
             });
         } catch (error) {
             return next(error);
@@ -25,7 +27,7 @@ class TrainController {
         const { trainId } = req.params;
         try {
             const loggedIn = req.cookies.jwt ? true : false;
-
+            const error = req.query.error || null
             const train = await TrainService.getTrainById(trainId);
 
             const stations = await Station.find();
@@ -34,7 +36,8 @@ class TrainController {
                 action: `/trains/${trainId}?_method=PUT`,
                 train,
                 stations,
-                loggedIn
+                loggedIn,
+                error
             });
         } catch (error) {
             return next(error);

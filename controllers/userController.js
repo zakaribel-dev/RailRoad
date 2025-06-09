@@ -3,10 +3,9 @@ const { ERRORS } = require("../utils/errors");
 
 class UserController {
   static renderRegister(req, res) {
-  const error = req.query.message || null;
-  return res.render("register", { error });
-
-}
+    const error = req.query.message || null;
+    return res.render("register", { error });
+  }
 
   static renderLogin(req, res) {
     const error = req.query.message || null;
@@ -21,8 +20,9 @@ class UserController {
         // postman
         return res.status(200).json({ message: "Inscription réussie" });
       }
+      const error = req.query.error || null;
 
-      res.render("login", { error: null, loggedIn: false }); // front
+      res.render("login", { error, loggedIn: false }); // front
     } catch (error) {
       return next(error);
     }
@@ -31,12 +31,17 @@ class UserController {
   static async loginUser(req, res, next) {
     const { email, password } = req.body;
     try {
-      const { user, token } = await UserService.authenticateUser(email, password);
+      const { user, token } = await UserService.authenticateUser(
+        email,
+        password
+      );
 
       res.cookie("jwt", token, { httpOnly: true, secure: false });
 
       if (req.headers.accept.includes("application/json")) {
-        return res.status(200).json({ message: "Connexion réussie", user, token });
+        return res
+          .status(200)
+          .json({ message: "Connexion réussie", user, token });
       }
 
       return res.redirect("/?message=Connexion%20réussie");
@@ -86,7 +91,7 @@ class UserController {
 
       return res.redirect("/?message=Profil bien mis à jour!");
     } catch (error) {
-      return next(error); 
+      return next(error);
     }
   }
 

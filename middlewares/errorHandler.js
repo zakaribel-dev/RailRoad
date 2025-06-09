@@ -7,7 +7,7 @@ module.exports = (err, req, res, next) => {
 
   const encodedMessage = encodeURIComponent(err.message);
 
-  // pour les requêtes api via postman par exmple
+  //  requêtes api via postman par exmple
   if (req.headers.accept && req.headers.accept.includes("application/json")) {
     return res.status(status).json(createErrorResponse(error));
   }

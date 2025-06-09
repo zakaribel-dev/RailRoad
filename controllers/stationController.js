@@ -5,18 +5,21 @@ const { ERRORS } = require('../utils/errors');
 class StationController {
   static renderCreateStationForm(req, res) {
     const loggedIn = req.cookies.jwt ? true : false;
+    const error = req.query.error || null;
 
     return res.render('stationForm', {
       formTitle: 'Créer une nouvelle Station',
       action: '/stations',
       station: null,
-      loggedIn
+      loggedIn,
+      error
     });
   }
 
   static async renderEditStationForm(req, res, next) {
     const { stationId } = req.params;
     const loggedIn = req.cookies.jwt ? true : false;
+    const error = req.query.error || null;
 
     try {
       const station = await StationService.getStationById(stationId);
@@ -25,7 +28,8 @@ class StationController {
         formTitle: 'Modifier la Station',
         action: `/stations/${stationId}?_method=PUT`,
         station,
-        loggedIn
+        loggedIn,
+        error
       });
     } catch (error) {
       return next(error);
