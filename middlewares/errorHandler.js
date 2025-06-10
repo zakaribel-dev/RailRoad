@@ -7,7 +7,7 @@ module.exports = (err, req, res, next) => {
 
   const encodedMessage = encodeURIComponent(err.message);
 
-  //  requêtes api via postman par exmple
+  //  requêtes en json
   if (req.headers.accept && req.headers.accept.includes("application/json")) {
     return res.status(status).json(createErrorResponse(err));
   }
@@ -17,7 +17,7 @@ module.exports = (err, req, res, next) => {
   }
 
   if (req.originalUrl.includes("/register")) {
-    return res.redirect(`/register?message=${encodedMessage}`);
+    return res.redirect(`/register?error=${encodedMessage}`);
   }
 
   if (req.originalUrl.includes("/trains")) {

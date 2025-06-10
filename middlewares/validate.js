@@ -7,11 +7,11 @@ const validationMiddleware = (schema) => (req, res, next) => {
     // check si front
     if (req.headers.accept && req.headers.accept.includes("text/html")) {
       const referer = req.get("referer"); // referer = route dans laquelle s'estproduite l'erreur de validation 
-      return res.redirect(`${referer}?message=${errorMessage}`);
+      return res.redirect(`${referer}?error=${errorMessage}`);
     }
 
     // postman etc..
-    return res.status(400).json({ message: error.details[0].message });
+    return res.status(400).json({ error: error.details[0].message });
   }
 
   next();
