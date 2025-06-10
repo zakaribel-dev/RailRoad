@@ -9,7 +9,7 @@ module.exports = (err, req, res, next) => {
 
   //  requêtes api via postman par exmple
   if (req.headers.accept && req.headers.accept.includes("application/json")) {
-    return res.status(status).json(createErrorResponse(error));
+    return res.status(status).json(createErrorResponse(err));
   }
 
   if (req.originalUrl.includes("/login")) {
