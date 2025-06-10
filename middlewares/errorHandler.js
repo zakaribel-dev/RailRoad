@@ -3,7 +3,7 @@ const { createErrorResponse } = require("../utils/errors");
 module.exports = (err, req, res, next) => {
   console.error(err);
 
-  const status = err.status || 500;
+  const status = err.status || 500; 
 
   const encodedMessage = encodeURIComponent(err.message);
 
@@ -13,7 +13,7 @@ module.exports = (err, req, res, next) => {
   }
 
   if (req.originalUrl.includes("/login")) {
-    return res.redirect(`/login?message=${encodedMessage}`);
+    return res.redirect(`/login?error=${encodedMessage}`);
   }
 
   if (req.originalUrl.includes("/register")) {
@@ -29,6 +29,8 @@ module.exports = (err, req, res, next) => {
   }
 
   if (req.originalUrl.includes("/profile")) {
-    return res.redirect(`/users/profile?error=${encodedMessage}`);
-  }
+  return res.redirect(`/users/profile?error=${encodedMessage}`);
+}
+
+
 };
