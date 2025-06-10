@@ -69,6 +69,7 @@ const ERRORS = {
 
 const createErrorResponse = (error) => ({
   error: error.code,
+  status: error.status,
   error_message: error.message,
 });
 

@@ -90,7 +90,7 @@ class TrainController {
                 time_of_departure
             });
 
-            if (req.headers.accept.includes('application/json')) { // Pour Postman
+            if (req.headers.accept.includes('application/json')) { 
                 return res.status(200).json({ message: 'Train bien ajouté.' });
             }
 
