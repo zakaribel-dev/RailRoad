@@ -30,7 +30,7 @@ class TicketController {
         "start_station end_station"
       );
       if (!train) {
-        throw { ...ERRORS.TRAIN_NOT_FOUND, status: 404 };
+        throw ERRORS.TRAIN_NOT_FOUND
       }
 
       const ticket = await TicketService.bookTicket(req.user.id, trainId);
