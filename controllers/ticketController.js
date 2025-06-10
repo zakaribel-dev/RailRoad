@@ -40,7 +40,6 @@ class TicketController {
       if (req.headers.accept.includes("application/json")) {
         return res.status(200).json({ message: responseMessage, ticket });
       }
-      ok;
       const loggedIn = req.cookies.jwt ? true : false;
       const user = req.user || null;
       const error = req.query.error || null;
